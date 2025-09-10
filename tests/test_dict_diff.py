@@ -21,6 +21,14 @@ def test_identity():
 
     assert diff == {}
 
+def test_list_of_dicts_diff():
+    dict_c = load_testdata("dict_c.json")
+    dict_d = load_testdata("dict_d.json")
+
+    diff = utils.dict_diff(dict_c, dict_d)
+
+    assert diff == {}
+
 def test_dict_diff():
     with open(script_dir / "testdata" / "dict_a.json", "r") as file:
         dict_a = json.loads(file.read())

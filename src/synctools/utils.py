@@ -7,6 +7,8 @@ from typing import Any, Mapping, Optional
 
 import dotenv
 
+class NormalizeException(Exception):
+    pass
 
 def load_env(required_envvars: list[str], envfile_path: str | None = None) -> dict:
     """
@@ -234,29 +236,49 @@ def normalize_dicts(template: dict[str, Any], inputs: list[dict[str, Any]]) -> l
     def normalize(template_value: Any, input_value: Any) -> Any:
         if template_value is None:
             # Template should never contain None, hard fail
-            raise Exception("Template should never contain None")
+            raise NormalizeException("Template should never contain None")
 
         if input_value is None:
             # Simplest case, input is None. Use template value.
             return template_value
 
         if isinstance(template_value, dict):
+            if not isinstance(input_value, dict):
+                # Type mismatch, we can't resolve this
+                raise NormalizeException("Type mismatch: template is a dict, but input is not a dict")
+
             # Recurse into dict
             return {k: normalize(v, (input_value or {}).get(k)) for k, v in template_value.items()}
 
         if isinstance(template_value, list):
             if not isinstance(input_value, list):
                 # Type mismatch, we can't resolve this
-                raise Exception("Type mismatch: template is a list, but input is not a list")
+                raise NormalizeException("Type mismatch: template is a list, but input is not a list")
 
             if len(template_value) == 0:
-                # Empty list in template, use input value
-                return input_value
+                # Template can't be empty list... we need to know the type
+                raise NormalizeException("Type mismatch: template list should have at least one element")
 
-            if template_value and isinstance(template_value[0], dict):
-                return [normalize(template_value[0], v) for v in input_value]
-            return input_value
-        else:
-            return input_value
+            # Check if template_value has mixed types
+            has_mixed_types = len({type(x) for x in template_value}) > 1
+            if has_mixed_types:
+                # Bad template
+                raise NormalizeException("Type mismatch: template list has mixed types")
+
+            # Now we have a non-empty, non-mixed-type list (in the template)
+
+            return_list = []
+            for i in range(len(template_value)):
+                template_element = template_value[i]
+                input_element = input_value[i] if i < len(input_value) else None
+                return_list.append(normalize(template_element, input_element))
+
+            return return_list
+
+        # At this point, we have a primitive, non-empty type
+
+        #if isinstance(template_value, str) and isinstance(input_value, int):
+
+        return input_value
 
     return [normalize(template, d) for d in inputs]
