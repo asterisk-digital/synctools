@@ -66,3 +66,14 @@ def test_validate_dict():
         mixed_types_exception_thrown = True
 
     assert mixed_types_exception_thrown
+
+def test_complete_dicts():
+    dict_e = load_testdata("dict_e.json")
+    template_a = load_testdata("template_a.json")
+
+    completed_dict = utils.complete_dicts(template_a, [dict_e])[0]
+
+    # Check completion
+    assert completed_dict["custom_fields"]["abc"] == []
+    # Check type coercion
+    assert completed_dict["postal_address"]["street_number"] == "22"

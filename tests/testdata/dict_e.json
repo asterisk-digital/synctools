@@ -6,5 +6,8 @@
   "add_time": "2025-09-09T13:57:05Z",
   "update_time": "2025-09-10T13:57:29Z",
   "visible_to": 17,
-  "custom_fields": null
+  "custom_fields": null,
+  "postal_address": {
+    "street_number": 22
+  }
 }
