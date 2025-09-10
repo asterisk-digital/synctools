@@ -1,6 +1,8 @@
 import logging
 import os
+from argparse import ArgumentParser
 from pathlib import Path
+from typing import Any, Mapping, Optional
 
 import dotenv
 
@@ -54,21 +56,25 @@ def list_to_dict(list_in: list[dict], metakey: str) -> dict:
     return return_dict
 
 
-def dict_diff(dict_a: dict, dict_b: dict) -> dict:
+def dict_diff(dict_a: Mapping[Any, Any], dict_b: Mapping[Any, Any]) -> dict[Any, Any]:
     """
-    Compares dict_a and dict_b. Returns the difference. Return a dict with a key and value for
-    each value that is different. See the tests for a demonstration how this should work.
-    Essentially, check if dict_a is a strict subset of dict_b, and return the difference
-    Keys that aren't in both a and b are ignored
-    :param dict_a:
-    :param dict_b:
-    :return: dict
+    Compare dict_a against dict_b and return the (recursive) difference.
+    Only keys present in both are considered. Works with any Mapping and
+    any hashable key type.
     """
-    diff = {}
-    for key, value in dict_a.items():
-        if key in dict_b:
-            if value != dict_b[key]:
-                diff[key] = value
+    diff: dict[Any, Any] = {}
+
+    for key in (dict_a.keys() & dict_b.keys()):
+        a_val = dict_a[key]
+        b_val = dict_b[key]
+
+        if isinstance(a_val, dict) and isinstance(b_val, dict):
+            sub = dict_diff(a_val, b_val)
+            if sub:
+                diff[key] = sub
+        else:
+            if a_val != b_val:
+                diff[key] = a_val
 
     return diff
 
@@ -81,3 +87,41 @@ def is_running_in_cloud_run() -> bool:
     # K_SERVICE should always be defined in GCP if it's a service and CLOUD_RUN_JOB if it's a job
     # See https://cloud.google.com/run/docs/container-contract#env-vars
     return "K_SERVICE" in os.environ or "CLOUD_RUN_JOB" in os.environ
+
+def add_skip_only_parser(parser: ArgumentParser, known_models_key_list: list[str]) -> ArgumentParser:
+    sel = parser.add_mutually_exclusive_group()
+    sel.add_argument(
+        "--skip",
+        help=f"Comma-separated list of models to skip (options: {', '.join(known_models_key_list)})",
+    )
+    sel.add_argument(
+        "--only",
+        help=(
+            "Comma-separated list of models to run (others are skipped) "
+            f"(options: {', '.join(known_models_key_list)})"
+        ),
+    )
+
+    return parser
+
+def csv_to_list(value: Optional[str]) -> list[str]:
+    if not value:
+        return []
+    return [x.strip() for x in value.split(",") if x.strip()]
+
+def select_models(known_models: dict, skip: list[str], only: list[str]) -> list[str]:
+    # Fail fast if unknown models were passed
+    known = set(known_models.keys())
+    unknown = (set(skip) | set(only)) - known
+    if unknown:
+        raise ValueError(f"Unknown model(s): {', '.join(sorted(unknown))}. Known: {', '.join(sorted(known))}")
+
+    # decide final set
+    if only:
+        selected_models = sorted(only)
+    elif skip:
+        selected_models = sorted(known - set(skip))
+    else:
+        selected_models = sorted(known)
+
+    return selected_models
