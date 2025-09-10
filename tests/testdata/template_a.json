@@ -1,0 +1,65 @@
+{
+    "id": 10,
+    "name": "Jane Doe",
+    "first_name": "Jane",
+    "last_name": "Doe",
+    "add_time": "2025-09-09T13:57:05Z",
+    "update_time": "2025-09-10T13:57:29Z",
+    "visible_to": 17,
+    "custom_fields": {
+        "abc": [
+            143,
+            144
+        ],
+        "def": "Big Title",
+        "ghi": "Other Title"
+    },
+    "owner_id": 123456,
+    "label_ids": [
+        5
+    ],
+    "org_id": 1234,
+    "is_deleted": false,
+    "phones": [
+        {
+            "label": "work",
+            "value": "12345",
+            "primary": true
+        },
+        {
+            "label": "",
+            "value": "4321",
+            "primary": false
+        }
+    ],
+    "emails": [
+        {
+            "label": "work",
+            "value": "stuff@example.com",
+            "primary": true
+        }
+    ],
+    "im": [
+        {
+            "label": "other",
+            "value": "sip:abc@def.com",
+            "primary": true
+        }
+    ],
+    "job_title": "CEO",
+    "notes": "Here are some notes",
+    "picture_id": 67,
+    "postal_address": {
+        "value": "stuff.things@example.com",
+        "street_number": "16",
+        "route": "Park Road",
+        "sublocality": "Manhattan",
+        "locality": "New York",
+        "admin_area_level_1": "NY",
+        "admin_area_level_2": "NY2",
+        "country": "USA",
+        "postal_code": "98009",
+        "formatted_address": "Park Road 16, 98009 NY, USA"
+    },
+    "birthday": "-0001-11-30"
+}
