@@ -329,3 +329,65 @@ def validate_dict(input_dict: dict) -> None:
             pass
 
     validate_value(input_dict)
+
+from typing import Any
+
+def complete_dicts(template_dict: dict, input_dicts: list[dict]) -> list[dict]:
+    """
+    Complete each input dict to match the structure of template_dict.
+    - Copy structure recursively from the template.
+    - For missing branches:
+        * dict -> {}
+        * list -> []
+        * primitive -> template's value
+    - Coerce int -> str when the template expects a string.
+    """
+
+    # Validate the template is complete & valid per provided rules
+    validate_dict(template_dict)
+
+    def _coerce_to_template_type(template_value: Any, value: Any) -> Any:
+        # Only do the single requested coercion: int -> str
+        if isinstance(template_value, str) and isinstance(value, int) and not isinstance(value, bool):
+            return str(value)
+        return value
+
+    def _empty_like(template_value: Any) -> Any:
+        if isinstance(template_value, dict):
+            return {}
+        if isinstance(template_value, list):
+            return []
+        # For primitives, default to None
+        return None
+
+    def _complete(template_value: Any, data_value: Any) -> Any:
+        # Dict branch: ensure all keys exist; recurse
+        if isinstance(template_value, dict):
+            base = data_value if isinstance(data_value, dict) else {}
+            out = {}
+            for k, t_v in template_value.items():
+                if k in base:
+                    out[k] = _complete(t_v, base[k])
+                else:
+                    out[k] = _empty_like(t_v)
+            return out
+
+        # List branch: template lists are non-empty (validated).
+        # Use the first item as the element schema. Recurse per element.
+        if isinstance(template_value, list):
+            elem_schema = template_value[0]
+            if isinstance(data_value, list):
+                result_list = []
+                for item in data_value:
+                    # Apply coercion for primitive case up front (int -> str)
+                    item = _coerce_to_template_type(elem_schema, item)
+                    result_list.append(_complete(elem_schema, item))
+                return result_list
+            # If not a list or missing: provide an empty list to keep structure complete
+            return []
+
+        # Coerce when template expects str and value is int
+        data_value = _coerce_to_template_type(template_value, data_value)
+        return data_value
+
+    return [_complete(template_dict, d) for d in input_dicts]
