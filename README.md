@@ -1,40 +1,23 @@
 # synctools
 
+A set of tools useful for syncing data.
+
 ## Setup
 
-To set up the python environmentm you need `uv`, then run:
+This is typically used as a submodule, which can be added to a python project as follows:
+
 ```(bash)
-uv venv venv && source venv/bin/activate && uv pip install ".[dev]"
-op inject -i envtemplate.txt -o .env
+git submodule add git@github.com:asterisk-digital/synctools.git ./src/synctools
 ```
 
-## Running
+This will put synctools in the src/synctools folder of the project, which can then be imported as a module.
 
-The script depends on a set of envvars. To load these from `.env`, run
-```(bash)
-python3 -m synctools.main --envfile=.env
-```
+The library can be used as follows:
 
-## Linting
+## Usage
 
-```(bash)
-ruff check .
-```
+```(python)
+import synctools
 
-## Formatting
-
-```(bash)
-ruff format .
-```
-
-## Testing
-
-```(bash)
-tox
-```
-
-## Deployment
-
-```(bash)
-./scripts/deploy.sh .env
+synctools.utils.complete_dicts(...)
 ```
