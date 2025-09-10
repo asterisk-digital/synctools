@@ -1,3 +1,4 @@
+import copy
 import logging
 import os
 from argparse import ArgumentParser
@@ -125,3 +126,97 @@ def select_models(known_models: dict, skip: list[str], only: list[str]) -> list[
         selected_models = sorted(known)
 
     return selected_models
+
+def create_template(data: list[dict]) -> dict:
+    return merge_ignore_none(data)
+
+def merge_ignore_none(dicts: list[dict]) -> dict:
+    """
+    Recursively merge a sequence of dicts with these rules:
+      - None values are ignored (never written).
+      - Dicts are merged recursively.
+      - "Upgrade" empty -> non-empty ([], {}, ""), but never "downgrade" non-empty -> empty.
+      - For lists: the first non-empty list wins. We never replace a non-empty list with an empty list.
+      - For scalars (non-containers): last non-None wins, except we do not overwrite a non-empty
+        string with an empty string.
+      - Type flips are allowed only when upgrading from an *empty container* to a non-empty value.
+
+    Returns a new dict; inputs are not modified.
+    """
+
+    def is_empty_container(v: Any) -> bool:
+        return isinstance(v, (list, dict)) and len(v) == 0
+
+    def is_empty_string(v: Any) -> bool:
+        return isinstance(v, str) and v == ""
+
+    def is_container(v: Any) -> bool:
+        return isinstance(v, (list, dict))
+
+    def is_empty(v: Any) -> bool:
+        # "Empty" for downgrade/upgrade purposes
+        return v is None or is_empty_container(v) or is_empty_string(v)
+
+    def should_upgrade(old: Any, new: Any) -> bool:
+        # Upgrade when old is empty and new is not empty
+        if is_empty(old) and not is_empty(new):
+            return True
+        # Dicts merge rather than replace; treat as upgrade path handled elsewhere
+        return False
+
+    def is_downgrade(old: Any, new: Any) -> bool:
+        # Never replace non-empty with empty
+        if not is_empty(old) and is_empty(new):
+            return True
+        # Specifically, don't overwrite non-empty string with empty string
+        if isinstance(old, str) and old != "" and is_empty_string(new):
+            return True
+        # Don't replace a non-empty list with an empty list
+        if isinstance(old, list) and len(old) > 0 and isinstance(new, list) and len(new) == 0:
+            return True
+        return False
+
+    def _merge(into: dict[str, Any], src: dict[str, Any]) -> dict[str, Any]:
+        for k, v in src.items():
+            if v is None:
+                continue  # ignore None entirely
+
+            if k not in into:
+                # First write: deep-copy containers to avoid mutating inputs later
+                into[k] = copy.deepcopy(v) if is_container(v) else v
+                continue
+
+            old = into[k]
+
+            # Dict + Dict => recursive merge
+            if isinstance(old, dict) and isinstance(v, dict):
+                into[k] = _merge(old, v)
+                continue
+
+            # Never downgrade
+            if is_downgrade(old, v):
+                continue
+
+            # Upgrade: empty -> non-empty, allowing type change (e.g., [] -> [{"a":1}])
+            if should_upgrade(old, v):
+                into[k] = copy.deepcopy(v) if is_container(v) else v
+                continue
+
+            # Lists: keep the first non-empty list; don't replace it with another list (empty or not)
+            if isinstance(old, list) and isinstance(v, list):
+                # If old is empty, the 'should_upgrade' branch above already handled replacing with non-empty.
+                # If old is non-empty, we keep it (no concatenation unless you want that behavior).
+                continue
+
+            # For everything else (primarily scalars), last non-None wins
+            # (we already blocked empty-string downgrades above).
+            into[k] = v
+
+        return into
+
+    result: dict[str, Any] = {}
+    for d in dicts:
+        if not isinstance(d, dict):
+            raise TypeError(f"All items must be dicts; got {type(d).__name__}")
+        result = _merge(result, d)
+    return result
