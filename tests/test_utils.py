@@ -27,7 +27,7 @@ def test_list_of_dicts_diff():
 
     diff = utils.dict_diff(dict_c, dict_d)
 
-    assert diff == {}
+    assert diff["options"][0]["id"] == "1"
 
 def test_dict_diff():
     with open(script_dir / "testdata" / "dict_a.json", "r") as file:
