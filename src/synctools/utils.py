@@ -220,3 +220,43 @@ def merge_ignore_none(dicts: list[dict]) -> dict:
             raise TypeError(f"All items must be dicts; got {type(d).__name__}")
         result = _merge(result, d)
     return result
+
+
+def normalize_dicts(template: dict[str, Any], inputs: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """
+    Recursively normalize a list of dicts against a template schema.
+    - If a template field is a list, None becomes [].
+    - If it's a list of dicts, recurse into each dict.
+    - If it's a dict, recurse into it.
+    - Scalars default to the template value if missing/None.
+    """
+
+    def normalize(template_value: Any, input_value: Any) -> Any:
+        if template_value is None:
+            # Template should never contain None, hard fail
+            raise Exception("Template should never contain None")
+
+        if input_value is None:
+            # Simplest case, input is None. Use template value.
+            return template_value
+
+        if isinstance(template_value, dict):
+            # Recurse into dict
+            return {k: normalize(v, (input_value or {}).get(k)) for k, v in template_value.items()}
+
+        if isinstance(template_value, list):
+            if not isinstance(input_value, list):
+                # Type mismatch, we can't resolve this
+                raise Exception("Type mismatch: template is a list, but input is not a list")
+
+            if len(template_value) == 0:
+                # Empty list in template, use input value
+                return input_value
+
+            if template_value and isinstance(template_value[0], dict):
+                return [normalize(template_value[0], v) for v in input_value]
+            return input_value
+        else:
+            return input_value
+
+    return [normalize(template, d) for d in inputs]
