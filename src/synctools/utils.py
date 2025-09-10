@@ -10,6 +10,9 @@ import dotenv
 class NormalizeException(Exception):
     pass
 
+class DictValidationException(Exception):
+    pass
+
 def load_env(required_envvars: list[str], envfile_path: str | None = None) -> dict:
     """
     Loads environment variables from the environment. Sets the value to None if any of the required
@@ -282,3 +285,41 @@ def normalize_dicts(template: dict[str, Any], inputs: list[dict[str, Any]]) -> l
         return input_value
 
     return [normalize(template, d) for d in inputs]
+
+def validate_dict(input_dict: dict) -> None:
+    """
+    Recursively validate that a given dict is complete and valid. That means:
+    - No "None" values
+    - No empty lists
+    - No empty dicts
+    - No mixed values in lists
+    - No mixed keys in dicts
+    :param input_dict:
+    :raises DictValidationException: If the dict is not complete or valid
+    :return: None
+    """
+
+    def validate_value(value: Any) -> None:
+        if value is None:
+            raise DictValidationException("None value found")
+        if isinstance(value, list) and len(value) == 0:
+            raise DictValidationException("Empty list found")
+        if isinstance(value, dict) and len(value) == 0:
+            raise DictValidationException("Empty dict found")
+        if isinstance(value, list):
+            has_mixed_types = len({type(x) for x in value}) > 1
+            if has_mixed_types:
+                raise DictValidationException("Type mismatch: list has mixed types")
+            for v in value:
+                validate_value(v)
+        elif isinstance(value, dict):
+            # Ensure no mixed value keys
+            has_mixed_types = len({type(x) for x in value.keys()}) > 1
+            if has_mixed_types:
+                raise DictValidationException("Type mismatch: dict keys have mixed types")
+            for v in value.values():
+                validate_value(v)
+        else:
+            validate_value(value)
+
+    validate_value(input_dict)
