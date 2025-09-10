@@ -1,0 +1,47 @@
+{
+    "id": 1234,
+    "key": "label",
+    "name": "Label",
+    "order_nr": 15,
+    "field_type": "enum",
+    "json_column_flag": false,
+    "add_time": "2022-08-03 10:35:35",
+    "update_time": "2025-07-04 09:39:52",
+    "edit_flag": false,
+    "details_visible_flag": true,
+    "add_visible_flag": true,
+    "important_flag": false,
+    "bulk_edit_allowed": true,
+    "filtering_allowed": true,
+    "sortable_flag": true,
+    "mandatory_flag": false,
+    "searchable_flag": false,
+    "restriction_settings": [],
+    "active_flag": true,
+    "last_updated_by_user_id": 0,
+    "use_field": "owner_id",
+    "link": "/organization/",
+    "autocomplete": "org_autocomplete",
+    "display_field": "owner_name",
+    "options": [
+        {
+            "id": "1",
+            "label": "Element"
+        },
+        {
+            "id": "2",
+            "label": "Element visible"
+        },
+        {
+            "id": "3",
+            "label": "Element visible and sub"
+        },
+        {
+            "id": "4",
+            "label": "Alle users"
+        }
+    ],
+    "is_subfield": true,
+    "parent_id": 3456,
+    "id_suffix": "formatted_address"
+}
