@@ -10,7 +10,10 @@ import dotenv
 class NormalizeException(Exception):
     pass
 
-class DictValidationException(Exception):
+class EmptyValueException(Exception):
+    pass
+
+class MixedTypesException(Exception):
     pass
 
 def load_env(required_envvars: list[str], envfile_path: str | None = None) -> dict:
@@ -288,10 +291,12 @@ def normalize_dicts(template: dict[str, Any], inputs: list[dict[str, Any]]) -> l
 
 def validate_dict(input_dict: dict) -> None:
     """
-    Recursively validate that a given dict is complete and valid. That means:
+    Recursively validate a given dict.
+    It needs to be 1. complete (no empty values). That means:
     - No "None" values
     - No empty lists
     - No empty dicts
+    It also needs to be 2. valid (no mixed types). That means:
     - No mixed values in lists
     - No mixed keys in dicts
     :param input_dict:
@@ -301,22 +306,22 @@ def validate_dict(input_dict: dict) -> None:
 
     def validate_value(value: Any) -> None:
         if value is None:
-            raise DictValidationException("None value found")
+            raise EmptyValueException("None value found")
         if isinstance(value, list) and len(value) == 0:
-            raise DictValidationException("Empty list found")
+            raise EmptyValueException("Empty list found")
         if isinstance(value, dict) and len(value) == 0:
-            raise DictValidationException("Empty dict found")
+            raise EmptyValueException("Empty dict found")
         if isinstance(value, list):
             has_mixed_types = len({type(x) for x in value}) > 1
             if has_mixed_types:
-                raise DictValidationException("Type mismatch: list has mixed types")
+                raise MixedTypesException("Type mismatch: list has mixed types")
             for v in value:
                 validate_value(v)
         elif isinstance(value, dict):
             # Ensure no mixed value keys
             has_mixed_types = len({type(x) for x in value.keys()}) > 1
             if has_mixed_types:
-                raise DictValidationException("Type mismatch: dict keys have mixed types")
+                raise MixedTypesException("Type mismatch: dict keys have mixed types")
             for v in value.values():
                 validate_value(v)
         else:

@@ -46,4 +46,23 @@ def test_validate_dict():
 
     utils.validate_dict(template_a)
 
-    assert True
+    template_b = load_testdata("template_b.json")
+
+    # TODO: Probably a better way to do this
+    empty_value_exception_thrown = False
+    try:
+        utils.validate_dict(template_b)
+    except utils.EmptyValueException:
+        empty_value_exception_thrown = True
+
+    assert empty_value_exception_thrown
+
+    template_c = load_testdata("template_c.json")
+
+    mixed_types_exception_thrown = False
+    try:
+        utils.validate_dict(template_c)
+    except utils.MixedTypesException:
+        mixed_types_exception_thrown = True
+
+    assert mixed_types_exception_thrown
