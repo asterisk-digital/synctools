@@ -320,6 +320,7 @@ def validate_dict(input_dict: dict) -> None:
             for v in value.values():
                 validate_value(v)
         else:
-            validate_value(value)
+            # Primitive value, do nothing
+            pass
 
     validate_value(input_dict)

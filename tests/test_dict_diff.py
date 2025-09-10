@@ -39,3 +39,11 @@ def test_dict_diff():
     diff = utils.dict_diff(dict_a, dict_b)
 
     assert diff
+
+
+def test_validate_dict():
+    template_a = load_testdata("template_a.json")
+
+    utils.validate_dict(template_a)
+
+    assert True
