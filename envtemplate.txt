@@ -1,6 +1,0 @@
-APP_NAME=synctools
-REGION=europe-west1
-GOOGLE_PROJECT_ID=production-363517
-
-API_URL={{ op://Development/synctools/API_URL }}
-API_KEY={{ op://Development/synctools/API_KEY }}
