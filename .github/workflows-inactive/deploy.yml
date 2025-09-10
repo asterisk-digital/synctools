@@ -1,0 +1,30 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ "main" ]
+
+env:
+  OP_CONNECT_HOST: ${{ vars.OP_CONNECT_HOST }}
+  OP_CONNECT_TOKEN: ${{ secrets.OP_CONNECT_TOKEN_PROD }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install OP CLI
+        uses: 1password/install-cli-action@v1
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.DEFAULT_COMPUTE_CREDENTIALS_JSON_PROD }}
+
+      - name: Init Env
+        run: ./scripts/initenv.sh prod
+
+      - name: Deploy
+        run: ./scripts/deploy.sh .env-prod

@@ -1,0 +1,6 @@
+APP_NAME=python_template
+REGION=europe-west1
+GOOGLE_PROJECT_ID=production-363517
+
+API_URL={{ op://Development/python_template/API_URL }}
+API_KEY={{ op://Development/python_template/API_KEY }}

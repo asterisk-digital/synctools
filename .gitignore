@@ -1,0 +1,24 @@
+# Python stuff
+*.pyc
+/venv/
+
+# Jetbrains stuff
+/.idea/
+
+# Stuff that should never be in git (includes credentials)
+*config.json
+*.log
+
+# .env files contain sensitive data (config), so never put in Git
+.env
+.*env*
+
+# macOS stuff
+.DS_Store
+
+/build/
+*.egg-info
+
+uv.lock
+
+/cache/
