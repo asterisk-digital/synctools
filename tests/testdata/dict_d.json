@@ -1,0 +1,20 @@
+{
+  "options": [
+    {
+      "id": 1,
+      "label": "Elementeier"
+    },
+    {
+      "id": 3,
+      "label": "Elementeierens synlighetsgruppe"
+    },
+    {
+      "id": 5,
+      "label": "Elementeierens synlighetsgruppe og undergrupper"
+    },
+    {
+      "id": 7,
+      "label": "Alle brukere"
+    }
+  ]
+}
