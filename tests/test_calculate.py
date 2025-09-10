@@ -2,7 +2,7 @@ import os
 import json
 from pathlib import Path
 
-from python_template.App import App
+from synctools.App import App
 
 script_dir = Path(os.path.dirname(os.path.realpath(__file__)))
 testdata_dir = Path(script_dir, "testdata")

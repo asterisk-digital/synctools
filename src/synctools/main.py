@@ -5,7 +5,7 @@ from .App import App
 
 def main():
     parser = argparse.ArgumentParser(
-        description="python_template"
+        description="synctools"
     )
     parser.add_argument(
         "--dry-run", dest="dry_run", help="Enable dry run, where nothing is applied", action="store_true"

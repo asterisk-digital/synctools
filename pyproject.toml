@@ -1,5 +1,5 @@
 [project]
-name = "python_template"
+name = "synctools"
 version = "0.1.0"
 description = "A simple Python template project"
 authors = [{ name = "David Skoland", email = "david.skoland@asterisk.digital" }]
@@ -22,7 +22,7 @@ dependencies = [
 
 # Add a console script so we can run it from the command line
 #[project.scripts]
-#pythontemplate = "python_template.main:main"
+#pythontemplate = "synctools.main:main"
 
 [tool.setuptools]
 # src-layout project
@@ -30,8 +30,8 @@ package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
-# include python_template
-include = ["python_template*"]
+# include synctools
+include = ["synctools*"]
 
 [project.optional-dependencies]
 dev = [

@@ -1,4 +1,4 @@
-# python_template
+# synctools
 
 ## Setup
 
@@ -12,7 +12,7 @@ op inject -i envtemplate.txt -o .env
 
 The script depends on a set of envvars. To load these from `.env`, run
 ```(bash)
-python3 -m python_template.main --envfile=.env
+python3 -m synctools.main --envfile=.env
 ```
 
 ## Linting
