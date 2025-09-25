@@ -162,7 +162,7 @@ def get_latest_bq_rows(
 
     where_clauses: list[str] = []
     if pk_list:
-        where_clauses.append(f"{[pk_name]} IN UNNEST(@pk_list)")
+        where_clauses.append(f"{pk_name} IN UNNEST(@pk_list)")
 
     where_sql = f"WHERE {' OR '.join(where_clauses)}" if where_clauses else ""
 
