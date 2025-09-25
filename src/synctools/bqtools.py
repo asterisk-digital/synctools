@@ -1,5 +1,5 @@
 from google.cloud import bigquery
-from typing import Any, List
+from typing import Any, List, Optional
 
 
 def python_type_to_bq_type(py_val: Any) -> str:
@@ -143,3 +143,47 @@ def make_bq_table(bq_client, bq_project, bq_dataset, bq_table: str, schema_dict:
     """
 
     bq_client.query(alter_sql)
+
+
+# Gets only the latest relevant row for each PK based on AsteriskSyncDate
+def get_latest_bq_rows(
+    bq_client,
+    bq_project: str,
+    bq_dataset: str,
+    bq_table: str,
+    pk_name: str,
+    pk_list: Optional[list[int]] = None,
+) -> list[dict]:
+    table_ref = f"{bq_project}.{bq_dataset}.{bq_table}"
+
+    # If table does not exist, return empty list
+    if not does_bq_table_exist(bq_client, bq_project, bq_dataset, bq_table):
+        return []
+
+    where_clauses: list[str] = []
+    if pk_list:
+        where_clauses.append(f"{[pk_name]} IN UNNEST(@pk_list)")
+
+    where_sql = f"WHERE {' OR '.join(where_clauses)}" if where_clauses else ""
+
+    query = f"""
+    SELECT * EXCEPT(AsteriskSyncDate)
+    FROM `{table_ref}`
+    {where_sql}
+    QUALIFY ROW_NUMBER() OVER (
+        PARTITION BY {pk_name}
+        ORDER BY AsteriskSyncDate DESC
+    ) = 1
+    """
+
+    params = []
+    if pk_list:
+        pk_type = python_type_to_bq_type(pk_list[0])
+        params.append(bigquery.ArrayQueryParameter("pk_list", pk_type, pk_list))
+
+    job_config = bigquery.QueryJobConfig(query_parameters=params) if params else None
+    results = bq_client.query(query, job_config=job_config).result()
+
+    data = [dict(row) for row in results]
+
+    return data
