@@ -7,14 +7,18 @@ from typing import Any, Mapping, Optional
 
 import dotenv
 
+
 class NormalizeException(Exception):
     pass
+
 
 class EmptyValueException(Exception):
     pass
 
+
 class MixedTypesException(Exception):
     pass
+
 
 def load_env(required_envvars: list[str], envfile_path: str | None = None) -> dict:
     """
@@ -73,7 +77,7 @@ def dict_diff(dict_a: Mapping[Any, Any], dict_b: Mapping[Any, Any]) -> dict[Any,
     """
     diff: dict[Any, Any] = {}
 
-    for key in (dict_a.keys() & dict_b.keys()):
+    for key in dict_a.keys() & dict_b.keys():
         a_val = dict_a[key]
         b_val = dict_b[key]
 
@@ -97,6 +101,7 @@ def is_running_in_cloud_run() -> bool:
     # See https://cloud.google.com/run/docs/container-contract#env-vars
     return "K_SERVICE" in os.environ or "CLOUD_RUN_JOB" in os.environ
 
+
 def add_skip_only_parser(parser: ArgumentParser, known_models_key_list: list[str]) -> ArgumentParser:
     sel = parser.add_mutually_exclusive_group()
     sel.add_argument(
@@ -106,17 +111,18 @@ def add_skip_only_parser(parser: ArgumentParser, known_models_key_list: list[str
     sel.add_argument(
         "--only",
         help=(
-            "Comma-separated list of models to run (others are skipped) "
-            f"(options: {', '.join(known_models_key_list)})"
+            f"Comma-separated list of models to run (others are skipped) (options: {', '.join(known_models_key_list)})"
         ),
     )
 
     return parser
 
+
 def csv_to_list(value: Optional[str]) -> list[str]:
     if not value:
         return []
     return [x.strip() for x in value.split(",") if x.strip()]
+
 
 def select_models(known_models: dict, skip: list[str], only: list[str]) -> list[str]:
     # Fail fast if unknown models were passed
@@ -135,11 +141,14 @@ def select_models(known_models: dict, skip: list[str], only: list[str]) -> list[
 
     return selected_models
 
+
 def create_template(data: list[dict]) -> dict:
     return merge_ignore_none(data)
 
+
 def create_schema_dict(data: list[dict]) -> dict:
     return merge_ignore_none(data)
+
 
 def merge_ignore_none(dicts: list[dict]) -> dict:
     """
@@ -286,11 +295,12 @@ def normalize_dicts(template: dict[str, Any], inputs: list[dict[str, Any]]) -> l
 
         # At this point, we have a primitive, non-empty type
 
-        #if isinstance(template_value, str) and isinstance(input_value, int):
+        # if isinstance(template_value, str) and isinstance(input_value, int):
 
         return input_value
 
     return [normalize(template, d) for d in inputs]
+
 
 def validate_dict(input_dict: dict) -> None:
     """
@@ -333,7 +343,9 @@ def validate_dict(input_dict: dict) -> None:
 
     validate_value(input_dict)
 
+
 from typing import Any
+
 
 def complete_dicts(template_dict: dict, input_dicts: list[dict]) -> list[dict]:
     """

@@ -7,12 +7,14 @@ import synctools.utils as utils
 
 script_dir = Path(os.path.dirname(os.path.realpath(__file__)))
 
+
 def load_testdata(filename: str):
     full_path = Path(script_dir / "testdata" / filename)
     with open(full_path) as file:
         data = json.loads(file.read())
 
     return data
+
 
 def test_identity():
     dict_b = load_testdata("dict_b.json")
@@ -21,6 +23,7 @@ def test_identity():
 
     assert diff == {}
 
+
 def test_list_of_dicts_diff():
     dict_c = load_testdata("dict_c.json")
     dict_d = load_testdata("dict_d.json")
@@ -28,6 +31,7 @@ def test_list_of_dicts_diff():
     diff = utils.dict_diff(dict_c, dict_d)
 
     assert diff["options"][0]["id"] == "1"
+
 
 def test_dict_diff():
     with open(script_dir / "testdata" / "dict_a.json", "r") as file:
@@ -66,6 +70,7 @@ def test_validate_dict():
         mixed_types_exception_thrown = True
 
     assert mixed_types_exception_thrown
+
 
 def test_complete_dicts():
     dict_e = load_testdata("dict_e.json")
