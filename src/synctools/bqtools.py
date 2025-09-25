@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from google.cloud import bigquery
 from typing import Any, List
 
@@ -102,7 +100,19 @@ def pydict_to_bqschema(data: dict) -> List[bigquery.SchemaField]:
     return schema
 
 
-def make_bq_table(bq_client, bq_project, bq_dataset, bq_table: str, template_dict: dict):
+def does_bq_table_exist(bq_client, bq_project: str, bq_dataset: str, bq_table: str):
+    table_ref = f"{bq_project}.{bq_dataset}.{bq_table}"
+
+    try:
+        bq_client.get_table(table_ref)
+        return True
+    except Exception as e:
+        if "Not found" not in str(e):
+            raise
+        return False
+
+
+def make_bq_table(bq_client, bq_project, bq_dataset, bq_table: str, schema_dict: dict):
     # Short-circuit if the BQ table already exists
     table_ref = f"{bq_project}.{bq_dataset}.{bq_table}"
     try:
@@ -113,7 +123,7 @@ def make_bq_table(bq_client, bq_project, bq_dataset, bq_table: str, template_dic
         if "Not found" not in str(e):
             raise
 
-    schema = pydict_to_bqschema(template_dict, pk_field=None)
+    schema = pydict_to_bqschema(schema_dict)
 
     # We want this in source control too
     with open(f"bqschema_{bq_table}.txt", "w") as f:
@@ -121,13 +131,13 @@ def make_bq_table(bq_client, bq_project, bq_dataset, bq_table: str, template_dic
             f.write(str(field) + "\n")
 
     # Create BQ table
-    table_id = f"{bq_project}.{bq_dataset}.{bq_table}"
-    table = bigquery.Table(table_id, schema=schema)
+    table_ref = f"{bq_project}.{bq_dataset}.{bq_table}"
+    table = bigquery.Table(table_ref, schema=schema)
     table = bq_client.create_table(table)
 
     # Run ALTER TABLE to set default on AsteriskSyncDate
     alter_sql = f"""
-    ALTER TABLE `{table_id}`
+    ALTER TABLE `{table_ref}`
     ALTER COLUMN AsteriskSyncDate
     SET DEFAULT CURRENT_TIMESTAMP();
     """
