@@ -138,6 +138,9 @@ def select_models(known_models: dict, skip: list[str], only: list[str]) -> list[
 def create_template(data: list[dict]) -> dict:
     return merge_ignore_none(data)
 
+def create_schema_dict(data: list[dict]) -> dict:
+    return merge_ignore_none(data)
+
 def merge_ignore_none(dicts: list[dict]) -> dict:
     """
     Recursively merge a sequence of dicts with these rules:
