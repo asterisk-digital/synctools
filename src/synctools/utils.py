@@ -153,7 +153,8 @@ def create_schema_dict(data: list[dict]) -> dict:
 def merge_ignore_none(dicts: list[dict]) -> dict:
     """
     Recursively merge a sequence of dicts with these rules:
-      - None values are ignored (never written).
+      - If a key appears only with None values, include it with "".
+      - None values never downgrade an existing non-empty value.
       - Dicts are merged recursively.
       - "Upgrade" empty -> non-empty ([], {}, ""), but never "downgrade" non-empty -> empty.
       - For lists: the first non-empty list wins. We never replace a non-empty list with an empty list.
@@ -199,7 +200,11 @@ def merge_ignore_none(dicts: list[dict]) -> dict:
     def _merge(into: dict[str, Any], src: dict[str, Any]) -> dict[str, Any]:
         for k, v in src.items():
             if v is None:
-                continue  # ignore None entirely
+                # Include keys that are only None by initializing to ""
+                if k not in into:
+                    into[k] = ""
+                # If the key already exists, None never downgrades—do nothing.
+                continue
 
             if k not in into:
                 # First write: deep-copy containers to avoid mutating inputs later
