@@ -36,10 +36,7 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools]
 # src-layout
 package-dir = { "" = "src" }
-
-[tool.setuptools.packages.find]
-where = ["src"]
-include = ["synctools*"]
+packages = ["synctools"]
 
 [tool.pytest.ini_options]
 minversion = "8.0"
