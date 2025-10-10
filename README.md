@@ -14,6 +14,13 @@ This will put synctools in the src/synctools folder of the project, which can th
 
 The library can be used as follows:
 
+## Development setup
+
+To set up for development:
+```(bash)
+uv venv && source .venv/bin/activate && uv pip install ".[dev]"
+```
+
 ## Usage
 
 ```(python)
