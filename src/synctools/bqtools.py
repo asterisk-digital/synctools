@@ -100,9 +100,7 @@ def pydict_to_bqschema(data: dict) -> List[bigquery.SchemaField]:
     return schema
 
 
-def does_bq_table_exist(bq_client, bq_project: str, bq_dataset: str, bq_table: str):
-    table_ref = f"{bq_project}.{bq_dataset}.{bq_table}"
-
+def does_bq_table_exist(bq_client, table_ref: str):
     try:
         bq_client.get_table(table_ref)
         return True
@@ -112,9 +110,8 @@ def does_bq_table_exist(bq_client, bq_project: str, bq_dataset: str, bq_table: s
         return False
 
 
-def make_bq_table(bq_client, bq_project, bq_dataset, bq_table: str, schema_dict: dict):
+def make_bq_table(bq_client, table_ref: str, schema_dict: dict):
     # Short-circuit if the BQ table already exists
-    table_ref = f"{bq_project}.{bq_dataset}.{bq_table}"
     try:
         bq_client.get_table(table_ref)
         return
@@ -126,12 +123,11 @@ def make_bq_table(bq_client, bq_project, bq_dataset, bq_table: str, schema_dict:
     schema = pydict_to_bqschema(schema_dict)
 
     # We want this in source control too
-    with open(f"bqschema_{bq_table}.txt", "w") as f:
+    with open(f"bqschema_{table_ref}.txt", "w") as f:
         for field in schema:
             f.write(str(field) + "\n")
 
     # Create BQ table
-    table_ref = f"{bq_project}.{bq_dataset}.{bq_table}"
     table = bigquery.Table(table_ref, schema=schema)
     table = bq_client.create_table(table)
 
@@ -157,7 +153,7 @@ def get_latest_bq_rows(
     table_ref = f"{bq_project}.{bq_dataset}.{bq_table}"
 
     # If table does not exist, return empty list
-    if not does_bq_table_exist(bq_client, bq_project, bq_dataset, bq_table):
+    if not does_bq_table_exist(bq_client, table_ref):
         return []
 
     where_clauses: list[str] = []
