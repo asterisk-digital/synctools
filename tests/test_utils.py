@@ -82,3 +82,38 @@ def test_complete_dicts():
     assert completed_dict["custom_fields"]["abc"] == []
     # Check type coercion
     assert completed_dict["postal_address"]["street_number"] == "22"
+
+def test_create_schema_dict():
+    dict_list = [{
+        "Id": 1,
+        "Name": "Oslo",
+        "Phone": None,
+        "Fax": None,
+        "Email": None
+    },
+    {
+        "Id": 2,
+        "Name": "Stavanger",
+        "Phone": None,
+        "Fax": None,
+        "Email": None
+    },
+    {
+        "Id": 3,
+        "Name": "Bergen",
+        "Phone": None,
+        "Fax": None,
+        "Email": None
+    }]
+
+    expected_result = {
+        "Id": 3,
+        "Name": "Bergen",
+        "Phone": "",
+        "Fax": "",
+        "Email": ""
+    }
+
+    result = utils.create_schema_dict(dict_list)
+
+    assert result == expected_result
