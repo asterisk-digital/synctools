@@ -144,14 +144,10 @@ def make_bq_table(bq_client, table_ref: str, schema_dict: dict):
 # Gets only the latest relevant row for each PK based on AsteriskSyncDate
 def get_latest_bq_rows(
     bq_client,
-    bq_project: str,
-    bq_dataset: str,
-    bq_table: str,
+    table_ref: str,
     pk_name: str,
     pk_list: Optional[list[int]] = None,
 ) -> list[dict]:
-    table_ref = f"{bq_project}.{bq_dataset}.{bq_table}"
-
     # If table does not exist, return empty list
     if not does_bq_table_exist(bq_client, table_ref):
         return []
