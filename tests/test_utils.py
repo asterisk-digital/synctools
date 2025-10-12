@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 
 
-import synctools.utils as utils
+from synctools import utils
 
 script_dir = Path(os.path.dirname(os.path.realpath(__file__)))
 
