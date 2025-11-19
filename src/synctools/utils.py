@@ -129,7 +129,7 @@ def csv_to_list(value: Optional[str]) -> list[str]:
     return [x.strip() for x in value.split(",") if x.strip()]
 
 
-def select_models(known_models: list[str], skip: list[str], only: list[str]) -> list[str]:
+def select_models(known_models: list[str], skip: list[str] | None, only: list[str] | None) -> list[str]:
     if not known_models:
         # Known models can't be empty, fail early if it is
         raise ValueError("No known models passed")
@@ -141,6 +141,12 @@ def select_models(known_models: list[str], skip: list[str], only: list[str]) -> 
     if skip and only:
         # It doesn't make sense to specify both skip and only, fail early
         raise ValueError("Cannot specify both skip and only")
+
+    if skip is None:
+        skip = []
+
+    if only is None:
+        only = []
 
     # Fail fast if unknown models were passed
     known = set(known_models)
