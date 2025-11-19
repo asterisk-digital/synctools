@@ -155,22 +155,43 @@ def csv_to_list(value: Optional[str]) -> list[str]:
     return [x.strip() for x in value.split(",") if x.strip()]
 
 
-def select_models(known_models: dict, skip: list[str], only: list[str]) -> list[str]:
+def select_models(known_models: list[str], skip: list[str] | None, only: list[str] | None) -> list[str]:
+    if not known_models:
+        # Known models can't be empty, fail early if it is
+        raise ValueError("No known models passed")
+
+    if not skip and not only:
+        # Both args are empty or None, return all models
+        return sorted(known_models)
+
+    if skip and only:
+        # It doesn't make sense to specify both skip and only, fail early
+        raise ValueError("Cannot specify both skip and only")
+
+    if skip is None:
+        skip = []
+
+    if only is None:
+        only = []
+
     # Fail fast if unknown models were passed
-    known = set(known_models.keys())
+    known = set(known_models)
     unknown = (set(skip) | set(only)) - known
     if unknown:
-        raise ValueError(f"Unknown model(s): {', '.join(sorted(unknown))}. Known: {', '.join(sorted(known))}")
+        raise ValueError(f"Unknown model(s): {', '.join(unknown)}. Known: {', '.join(known)}")
 
-    # decide final set
+    # Decide final set
     if only:
-        selected_models = sorted(only)
+        selected_models = only
     elif skip:
-        selected_models = sorted(known - set(skip))
+        selected_models = known - set(skip)
     else:
-        selected_models = sorted(known)
+        # Shouldn't happen (covered above), but just in case
+        logging.warning("No skip or only models specified, running all models")
+        selected_models = known
 
-    return selected_models
+    # Return selected models sorted by known_models order
+    return sorted(selected_models, key=lambda x: known_models.index(x))
 
 
 def create_template(data: list[dict]) -> dict:
