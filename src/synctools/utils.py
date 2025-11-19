@@ -129,13 +129,18 @@ def is_running_in_cloud_run() -> bool:
 
 
 def add_skip_only_parser(parser: ArgumentParser, known_models_key_list: list[str]) -> ArgumentParser:
+    def csv_list(value: str) -> list[str]:
+        return [v.strip() for v in value.split(",") if v.strip()]
+
     sel = parser.add_mutually_exclusive_group()
     sel.add_argument(
         "--skip",
+        type=csv_list,
         help=f"Comma-separated list of models to skip (options: {', '.join(known_models_key_list)})",
     )
     sel.add_argument(
         "--only",
+        type=csv_list,
         help=(
             f"Comma-separated list of models to run (others are skipped) (options: {', '.join(known_models_key_list)})"
         ),
