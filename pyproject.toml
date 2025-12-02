@@ -36,6 +36,9 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools]
 package-dir = { "" = "src" }
 
+[tool.setuptools.package-data]
+synctools = ["*.json"]
+
 [tool.setuptools.packages.find]
 where = ["src"]
 include = ["synctools*"]
