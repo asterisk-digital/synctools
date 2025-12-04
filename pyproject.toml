@@ -1,6 +1,6 @@
 [project]
 name = "synctools"
-version = "0.1.0"
+version = "0.2.0"
 description = "A simple Python template project"
 authors = [{ name = "David Skoland", email = "david.skoland@asterisk.digital" }]
 requires-python = ">=3.11"
