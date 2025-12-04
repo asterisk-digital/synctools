@@ -131,41 +131,33 @@ def csv_to_list(value: Optional[str]) -> list[str]:
 
 def select_models(known_models: list[str], skip: list[str] | None, only: list[str] | None) -> list[str]:
     if not known_models:
-        # Known models can't be empty, fail early if it is
         raise ValueError("No known models passed")
 
-    if not skip and not only:
-        # Both args are empty or None, return all models
-        return sorted(known_models)
+    # Normalize parameters
+    skip = skip or []
+    only = only or []
 
     if skip and only:
-        # It doesn't make sense to specify both skip and only, fail early
         raise ValueError("Cannot specify both skip and only")
 
-    if skip is None:
-        skip = []
-
-    if only is None:
-        only = []
-
-    # Fail fast if unknown models were passed
-    known = set(known_models)
-    unknown = (set(skip) | set(only)) - known
+    known_set = set(known_models)
+    unknown = (set(skip) | set(only)) - known_set
     if unknown:
-        raise ValueError(f"Unknown model(s): {', '.join(unknown)}. Known: {', '.join(known)}")
+        raise ValueError(
+            f"Unknown model(s): {', '.join(unknown)}. "
+            f"Known: {', '.join(known_models)}"
+        )
 
-    # Decide final set
     if only:
-        selected_models = only
-    elif skip:
-        selected_models = known - set(skip)
-    else:
-        # Shouldn't happen (covered above), but just in case
-        logging.warning("No skip or only models specified, running all models")
-        selected_models = known
+        # Preserve the order of known_models but filter to ONLY the allowed ones
+        return [m for m in known_models if m in only]
 
-    # Return selected models sorted by known_models order
-    return sorted(selected_models, key=lambda x: known_models.index(x))
+    if skip:
+        # Preserve order, skip items
+        return [m for m in known_models if m not in skip]
+
+    # No skip/only specified → return all in original order
+    return list(known_models)
 
 
 def create_template(data: list[dict]) -> dict:
