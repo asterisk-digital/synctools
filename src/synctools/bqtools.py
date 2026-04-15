@@ -208,6 +208,8 @@ def _data_field_names(record, prefix=""):
         names.add(full_name)
         if isinstance(value, dict):
             names |= _data_field_names(value, prefix=f"{full_name}.")
+        elif isinstance(value, list) and value and isinstance(value[0], dict):
+            names |= _data_field_names(value[0], prefix=f"{full_name}.")
     return names
 
 
