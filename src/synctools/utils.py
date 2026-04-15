@@ -367,8 +367,6 @@ def validate_dict(input_dict: dict) -> None:
     validate_value(input_dict)
 
 
-from typing import Any
-
 
 def complete_dicts(template_dict: dict, input_dicts: list[dict]) -> list[dict]:
     """
