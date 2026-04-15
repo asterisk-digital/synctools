@@ -4,27 +4,42 @@ A set of tools useful for syncing data.
 
 ## Setup
 
-This is typically used as a submodule, which can be added to a python project as follows:
+Add to your project's `pyproject.toml` dependencies:
 
-```(bash)
-git submodule add git@github.com:asterisk-digital/synctools.git ./src/synctools
 ```
-
-This will put synctools in the src/synctools folder of the project, which can then be imported as a module.
+"synctools @ git+ssh://git@github.com/asterisk-digital/synctools.git@main"
+```
 
 The library can be used as follows:
-
-## Development setup
-
-To set up for development:
-```(bash)
-uv venv && source .venv/bin/activate && uv pip install ".[dev]"
-```
-
-## Usage
 
 ```(python)
 import synctools
 
 synctools.utils.complete_dicts(...)
+```
+
+## Development
+
+### Setup
+
+```(bash)
+uv sync --group dev
+```
+
+### Testing
+
+```(bash)
+uv run tox
+```
+
+### Linting
+
+```(bash)
+uv run ruff check .
+```
+
+### Formatting
+
+```(bash)
+uv run ruff format .
 ```
