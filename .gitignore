@@ -19,7 +19,5 @@
 /build/
 *.egg-info
 
-uv.lock
-
 /cache/
 /.tox/
