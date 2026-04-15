@@ -7,9 +7,9 @@ requires-python = ">=3.11"
 
 # Only true runtime deps here
 dependencies = [
-  "google-cloud-bigquery>=3.35.0",  # pin or range as you prefer
-  "python-dotenv>=1.0.0",
-  "requests>=2.32.0",
+  "google-cloud-bigquery>=3.35",
+  "python-dotenv>=1.0",
+  "requests>=2.32",
 ]
 
 [project.optional-dependencies]
