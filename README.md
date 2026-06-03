@@ -7,7 +7,7 @@ A set of tools useful for syncing data.
 Add to your project's `pyproject.toml` dependencies:
 
 ```
-"synctools @ git+ssh://git@github.com/asterisk-digital/synctools.git@main"
+"synctools @ git+https://github.com/asterisk-digital/synctools.git@main"
 ```
 
 The library can be used as follows:
@@ -41,5 +41,5 @@ uv run ruff check .
 ### Formatting
 
 ```(bash)
-uv run ruff format .
+uv run ruff format . --check
 ```

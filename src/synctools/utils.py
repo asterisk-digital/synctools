@@ -143,10 +143,7 @@ def select_models(known_models: list[str], skip: list[str] | None, only: list[st
     known_set = set(known_models)
     unknown = (set(skip) | set(only)) - known_set
     if unknown:
-        raise ValueError(
-            f"Unknown model(s): {', '.join(unknown)}. "
-            f"Known: {', '.join(known_models)}"
-        )
+        raise ValueError(f"Unknown model(s): {', '.join(unknown)}. Known: {', '.join(known_models)}")
 
     if only:
         # Preserve the order of known_models but filter to ONLY the allowed ones
@@ -365,7 +362,6 @@ def validate_dict(input_dict: dict) -> None:
             pass
 
     validate_value(input_dict)
-
 
 
 def complete_dicts(template_dict: dict, input_dicts: list[dict]) -> list[dict]:
