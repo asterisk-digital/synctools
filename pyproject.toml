@@ -17,10 +17,6 @@ dev = [
   "tox-uv>=1.14",
 ]
 
-# If you add CLIs later, uncomment and wire them up
-# [project.scripts]
-# synctools = "synctools.main:main"
-
 [build-system]
 requires = ["setuptools>=75", "wheel"]
 build-backend = "setuptools.build_meta"
