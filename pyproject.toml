@@ -1,7 +1,7 @@
 [project]
 name = "synctools"
 version = "0.2.0"
-description = "A simple Python template project"
+description = "A set of tools useful for syncing data"
 authors = [{ name = "David Skoland", email = "david.skoland@asterisk.digital" }]
 requires-python = ">=3.11"
 license = "MIT"
@@ -32,16 +32,13 @@ package-dir = { "" = "src" }
 where = ["src"]
 include = ["synctools*"]
 
-[tool.setuptools.package-data]
-synctools = ["*.json"]
-
 [tool.pytest.ini_options]
 minversion = "8.0"
 addopts = "-ra"
 testpaths = ["tests"]
 
 [tool.tox]
-env_list = ["py311"]
+env_list = ["py311", "py312", "py313"]
 
 [tool.tox.env_run_base]
 description = "Run tests with pytest"
