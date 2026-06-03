@@ -1,23 +1,25 @@
 # Python stuff
 *.pyc
 /venv/
+/.venv/
+/.tox/
+*.egg-info
+/build/
 
 # Jetbrains stuff
 /.idea/
 
-# Stuff that should never be in git (includes credentials)
-*config.json
-*.log
+# VCCode stuff
+/.vscode/
 
-# .env files contain sensitive data (config), so never put in Git
-.env
-.*env*
+# .env files contain sensitive data, so never put in Git
+.env*
 
 # macOS stuff
 .DS_Store
 
-/build/
-*.egg-info
+# Claude stuff
+/.claude/
 
+# App level cache
 /cache/
-/.tox/

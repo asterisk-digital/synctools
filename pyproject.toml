@@ -1,16 +1,13 @@
 [project]
 name = "synctools"
-version = "0.2.0"
-description = "A simple Python template project"
+version = "0.3.0"
+description = "A set of tools useful for syncing data"
 authors = [{ name = "David Skoland", email = "david.skoland@asterisk.digital" }]
 requires-python = ">=3.11"
 license = "MIT"
 license-files = ["LICENSE"]
 
-dependencies = [
-  "google-cloud-bigquery>=3.35",
-  "python-dotenv>=1.2",
-]
+dependencies = []
 
 [dependency-groups]
 dev = [
@@ -19,10 +16,6 @@ dev = [
   "tox>=4.50",
   "tox-uv>=1.14",
 ]
-
-# If you add CLIs later, uncomment and wire them up
-# [project.scripts]
-# synctools = "synctools.main:main"
 
 [build-system]
 requires = ["setuptools>=75", "wheel"]
@@ -35,22 +28,18 @@ package-dir = { "" = "src" }
 where = ["src"]
 include = ["synctools*"]
 
-[tool.setuptools.package-data]
-synctools = ["*.json"]
-
 [tool.pytest.ini_options]
 minversion = "8.0"
 addopts = "-ra"
 testpaths = ["tests"]
 
 [tool.tox]
-env_list = ["py311"]
+env_list = ["py311", "py312", "py313"]
 
 [tool.tox.env_run_base]
 description = "Run tests with pytest"
 package = "editable"
 dependency_groups = ["dev"]
-set_env = { PYTHONPATH = "{toxinidir}/src" }
 commands = [["pytest", "{posargs:tests}"]]
 
 [tool.ruff]

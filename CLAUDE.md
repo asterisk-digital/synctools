@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-synctools is a Python library for syncing data, primarily providing BigQuery helpers (`bqtools`) and dict/env utilities (`utils`). It is imported as a dependency by other projects.
+synctools is a Python library for syncing data, providing dict/env utilities (`utils`). It is imported as a dependency by other projects.
 
 ## Quality gates
 

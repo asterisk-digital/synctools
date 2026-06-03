@@ -3,9 +3,7 @@ import logging
 import os
 from argparse import ArgumentParser
 from pathlib import Path
-from typing import Any, Mapping, Optional
-
-import dotenv
+from typing import Any, Mapping, Optional, Union
 
 
 class NormalizeException(Exception):
@@ -18,6 +16,34 @@ class EmptyValueException(Exception):
 
 class MixedTypesException(Exception):
     pass
+
+
+PathLike = Union[str, os.PathLike[str]]
+
+
+# Implemented to avoid dotenv dependency in other modules
+def load_env_file(dotenv_path: PathLike = ".env") -> None:
+    # Normalize to Path
+    p = Path(dotenv_path)
+
+    if not p.is_file():
+        return
+
+    for line in p.read_text().splitlines():
+        line = line.strip()
+
+        # Skip comments and empty lines
+        if not line or line.startswith("#"):
+            continue
+
+        if "=" in line:
+            key, value = line.split("=", 1)
+
+            key = key.strip()
+            value = value.strip().strip('"').strip("'")
+
+            # Do not overwrite existing environment variables
+            os.environ.setdefault(key, value)
 
 
 def load_env(required_envvars: list[str], envfile_path: str | None = None) -> dict:
@@ -37,7 +63,7 @@ def load_env(required_envvars: list[str], envfile_path: str | None = None) -> di
             # Print absolute path to make it easier to debug
             raise FileNotFoundError(f"{envfile.absolute()}")
 
-        dotenv.load_dotenv(dotenv_path=envfile)
+        load_env_file(dotenv_path=envfile)
 
     envvars = {}
     for required_envvar in required_envvars:
