@@ -40,7 +40,6 @@ env_list = ["py311", "py312", "py313"]
 description = "Run tests with pytest"
 package = "editable"
 dependency_groups = ["dev"]
-set_env = { PYTHONPATH = "{toxinidir}/src" }
 commands = [["pytest", "{posargs:tests}"]]
 
 [tool.ruff]
