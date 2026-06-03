@@ -2,7 +2,7 @@
 
 A set of tools useful for syncing data.
 
-## Setup
+## Installing
 
 Add to your project's `pyproject.toml` dependencies:
 
@@ -18,13 +18,15 @@ import synctools
 synctools.utils.complete_dicts(...)
 ```
 
-## Development
-
-### Setup
+## Development setup
 
 ```(bash)
-uv sync --group dev
+uv sync
 ```
+
+## Checks
+
+These checks should always pass before pushing.
 
 ### Testing
 
@@ -41,5 +43,5 @@ uv run ruff check .
 ### Formatting
 
 ```(bash)
-uv run ruff format . --check
+uv run ruff format --check .
 ```
