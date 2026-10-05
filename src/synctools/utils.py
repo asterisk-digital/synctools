@@ -46,6 +46,7 @@ def load_env_file(dotenv_path: PathLike = ".env") -> None:
             # Do not overwrite existing environment variables
             os.environ.setdefault(key, value)
 
+
 def load_env_tpl(path: str) -> None:
     """Resolves a 1Password env template with `op inject` and loads it into os.environ."""
     out = subprocess.run(["op", "inject", "-i", path], check=True, stdout=subprocess.PIPE, text=True).stdout
@@ -53,6 +54,7 @@ def load_env_tpl(path: str) -> None:
         if line and not line.startswith("#") and "=" in line:
             key, value = line.split("=", 1)
             os.environ.setdefault(key, value)
+
 
 def load_env(required_envvars: list[str], envfile_path: str | None = None) -> dict:
     """
