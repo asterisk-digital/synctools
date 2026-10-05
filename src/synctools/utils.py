@@ -30,30 +30,23 @@ def load_env_file(dotenv_path: PathLike = ".env") -> None:
     if not p.is_file():
         return
 
-    for line in p.read_text().splitlines():
-        line = line.strip()
-
-        # Skip comments and empty lines
-        if not line or line.startswith("#"):
-            continue
-
-        if "=" in line:
-            key, value = line.split("=", 1)
-
-            key = key.strip()
-            value = value.strip().strip('"').strip("'")
-
-            # Do not overwrite existing environment variables
-            os.environ.setdefault(key, value)
+    _load_env_text(p.read_text())
 
 
 def load_env_tpl(path: str) -> None:
     """Resolves a 1Password env template with `op inject` and loads it into os.environ."""
     out = subprocess.run(["op", "inject", "-i", path], check=True, stdout=subprocess.PIPE, text=True).stdout
-    for line in out.splitlines():
-        if line and not line.startswith("#") and "=" in line:
-            key, value = line.split("=", 1)
-            os.environ.setdefault(key, value)
+    _load_env_text(out)
+
+
+def _load_env_text(text: str) -> None:
+    for line in text.splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+
+        key, value = line.split("=", 1)
+        os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
 
 
 def load_env(required_envvars: list[str], envfile_path: str | None = None) -> dict:
@@ -254,7 +247,7 @@ def merge_ignore_none(dicts: list[dict]) -> dict:
                 # Include keys that are only None by initializing to ""
                 if k not in into:
                     into[k] = ""
-                # If the key already exists, None never downgrades—do nothing.
+                # If the key already exists, None never downgrades, do nothing.
                 continue
 
             if k not in into:
